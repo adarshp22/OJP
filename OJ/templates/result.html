@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Title
+{% endblock %}
+
+{% block content %} 
+{% comment %} <h1 class="text-center mt-4">Online Judge</h1> {% endcomment %}
+<h1>Code Compiler</h1>
+<h1>Execution Result</h1>
+<p><strong>Language:</strong> {{ submission.language }}</p>
+<pre class="bg-light p-3 border rounded text-dark">{{ submission.code }}</pre>
+<p><strong>Input:</strong> <pre>{{ submission.input_data }}</pre></p>
+<p><strong>Output:</strong> <pre>{{ submission.output_data }}</pre></p>
+<a href="">Run another code</a>
+
+{% endblock %}

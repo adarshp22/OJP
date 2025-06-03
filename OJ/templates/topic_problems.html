@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block title %}Problems for {{ topic.title }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <h2 class="mb-4 text-center">{{ topic.title }}</h2>
+
+
+  <h4 class="mb-3">Problems under this Topic:</h4>
+
+  {% if problems %}
+    <div class="accordion" id="problemAccordion">
+   {% for problem in problems %}
+  <div class="card mb-3">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <strong>{{ problem.title }}</strong>
+      <button class="btn btn-sm btn-outline-primary" data-toggle="collapse" data-target="#desc{{ forloop.counter }}">View</button>
+      <a href="{% url 'solve_problem' problem.id %}" class="btn btn-outline-success btn-sm">Solve</a>
+    </div>
+    <div class="collapse" id="desc{{ forloop.counter }}">
+      <div class="card-body">
+        {{ problem.description_html|safe }}
+      </div>
+    </div>
+  </div>
+{% endfor %}
+    </div>
+  {% else %}
+    <p class="text-center text-muted">No problems available for this topic yet.</p>
+  {% endif %}
+
+  <div class="mt-4 text-center">
+    <a href="{% url 'problem_topics' %}" class="btn btn-secondary">Back to Topics</a>
+  </div>
+</div>
+
+<!-- Bootstrap JS (required for collapse) -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

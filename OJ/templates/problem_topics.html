@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block title %}Problem Topics{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <h2 class="mb-4 text-center">Problem Topics</h2>
+  
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for topic in topics %}
+      <div class="col">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">{{ topic.title }}</h5>
+            <p class="card-text text-muted">{{ topic.description|default:"No description available." }}</p>
+            <a href="{% url 'topic_problems' topic.id %}" class="btn btn-primary">View Problems</a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-center">No topics found.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

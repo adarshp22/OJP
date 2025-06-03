@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Title
+{% endblock %}
+
+{% block content %} 
+<h1 class="text-center mt-4">Online Judge</h1>
+<a class="btn btn-primary mb-3" href="{% url 'oj_create'%}">Create a Problem</a>
+<a class="btn btn-primary mb-3" href="{% url 'submit'%}">Online Compiler</a>
+<a class="btn btn-primary mb-3" href="{% url 'problem_topics'%}">Problems</a>
+<div class="container row gap-3">
+    {% for oj in ojs %}
+    <div class="card" style="width: 18rem;">
+  <img src="{{oj.photo.url}}" class="card-img-top" alt="">
+  <div class="card-body">
+    <h5 class="card-title">{{oj.user.username}}</h5>
+    <p class="card-text">{{oj.text}}</p>
+    
+    <div class="d-flex gap-2 mt-3">
+      {% if oj.user == user %}
+    <a href="{% url 'oj_edit' oj.id %}" class="btn btn-primary">Edit Problem</a>
+    <a href="{% url 'oj_delete' oj.id %}" class="btn btn-danger">Delete Problem</a>
+    {% endif %}
+  </div>
+  
+  </div>
+</div>
+    {% endfor %}
+</div>
+{% endblock %}

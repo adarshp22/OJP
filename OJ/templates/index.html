@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block title %}
+My Compiler
+{% endblock %}
+
+{% block content %}
+<h2 class="text-center mt-4">Online Compiler</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <div style="display: flex; gap: 20px;">
+        <div style="flex: 2; margin: 2px;">
+            <label>Code:</label><br>
+            <textarea id="codeEditor" name="code" rows="30" cols="70" placeholder="Write your code here...">{{ form.code.value|default_if_none:'' }}</textarea>
+        </div>
+        <div style="flex: 1; margin: 2px;">
+            <label>Input:</label><br>
+            <textarea name="input_data" rows="10" cols="10" placeholder="Custom input (optional)...">{{ form.input_data.value|default_if_none:'' }}</textarea>
+        </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 10px; margin-top: 1rem;">
+        <label for="id_language" style="font-weight: 600;">Language:</label>
+        {{ form.language }}
+        <button type="submit" style="background:#007bff; color:#fff; border:none; padding:6px 12px; border-radius:5px; cursor:pointer;"
+            onmouseover="this.style.background='#0056b3'" onmouseout="this.style.background='#007bff'">
+            Run Code
+        </button>
+    </div>
+</form>
+
+{% if submission %}
+<hr>
+<h2>Execution Result</h2>
+<p><strong>Output:</strong></p>
+<pre class="bg-dark p-3 border rounded">{{ submission.output_data }}</pre>
+{% endif %}
+
+<script>
+
+   
+  var editor = CodeMirror.fromTextArea(document.getElementById("codeEditor"), {
+    lineNumbers: true,
+    mode: "python", // dynamically change this based on selected language if needed
+    theme: "default",
+    autoCloseBrackets: true,
+    matchBrackets: true,
+    indentUnit: 4,
+    indentWithTabs: true
+  });
+</script>
+
+{% endblock %}

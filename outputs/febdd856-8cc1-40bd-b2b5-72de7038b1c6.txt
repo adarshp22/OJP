@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "C:\Users\adars\OneDrive\Desktop\IITK Courses\DEV\L4 Project\OnlineJudge\codes\febdd856-8cc1-40bd-b2b5-72de7038b1c6.py", line 3, in <module>
+    target = int(input())
+             ^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '2 7 11 15'

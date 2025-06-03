@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Title
+{% endblock %}
+
+{% block content %} 
+<h1 class="text-center mt-4">Online Judge</h1>
+
+<h2>
+    {% if form.instance.pk %} Edit 
+    {% else %} Create 
+    {% endif %} 
+
+    <form method="POST"enctype="multipart/form-data" class="form">
+        {% csrf_token %}
+        {{form.as_p}}
+        <button class="btn btn-warning" type="submit">Submit</button>
+    </form>
+    <a href="{% url 'oj_list'}">Back</a>
+</h2>
+{% endblock %}

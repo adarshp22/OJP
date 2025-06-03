@@ -1,0 +1,4 @@
+  File "C:\Users\adars\OneDrive\Desktop\IITK Courses\DEV\L4 Project\OnlineJudge\codes\52598dc7-ea19-408c-925b-a998e649b0eb.py", line 5
+    using namespace std;
+          ^^^^^^^^^
+SyntaxError: invalid syntax

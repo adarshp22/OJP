@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "C:\Users\adars\OneDrive\Desktop\IITK Courses\DEV\L4 Project\OnlineJudge\codes\ed043fb3-a560-417d-83e0-075c69220b23.py", line 1, in <module>
+    print(a)
+          ^
+NameError: name 'a' is not defined

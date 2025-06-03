@@ -1,0 +1,144 @@
+{% extends "layout.html" %}
+{% load markdownify %}
+{% block title %}
+  Practice
+{% endblock %}
+{% block content %}
+<style>
+  .code-editor {
+    width: 100%;
+    height: 400px;
+    font-family: monospace;
+    font-size: 20px;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    resize: vertical;
+    background-color: rgb(1, 13, 31);
+  }
+
+  .output-box {
+    white-space: pre-wrap;
+    background-color: rgba(18, 1, 1, 0);
+    border-radius: 4px;
+    padding: 5px;
+    max-height: 200px;
+    /* overflow-y: auto; */
+  }
+
+  .verdict-success {
+    color: green;
+    font-weight: bold;
+  }
+
+  .verdict-fail {
+    color: red;
+    font-weight: bold;
+  }
+
+  .CodeMirror {
+    border: 1px solid #ced4da;
+    height: auto;
+    min-height: 500px;
+    font-size: 14px;
+    font-family: monospace;
+  }
+
+  @media (max-width: 768px) {
+    .code-editor {
+      height: 300px;
+    }
+  }
+</style>
+
+<div class="container my-5">
+  <h2 class="mb-4">{{ problem.title }}</h2>
+
+  <div class="row">
+    <!-- Left Column: Problem Statement -->
+    <div class="col-md-6 mb-4">
+      <div class="card">
+        <div class="card-header bg-dark text-white">Problem Statement</div>
+        <div class="card-body">{{ problem.description_html|safe }}</div>
+      </div>
+    </div>
+
+    <!-- Right Column: Code Editor & Output -->
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <div class="card-header bg-primary text-white">Code Editor</div>
+        <div class="card-body">
+          <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="id_language">Language:</label>
+              {{ form.language }}
+              <textarea id="id_code" name="code" class="code-editor">
+{{ form.code.value|default_if_none:'' }}</textarea>
+            </div>
+            <button type="submit" name="action" value="run" class="btn btn-success">Run Code</button>
+            <button type="submit" name="action" value="ai_review" class="btn btn-danger">AI Review</button>
+          </form>
+        </div>
+      </div>
+
+      {% if output %}
+      <div class="card mb-3">
+        <div class="card-header bg-info text-white">Output</div>
+        <div class="card-body output-box">
+          {{ output }}
+          <h5 class="mt-3">
+            Verdict:
+            {% if verdict %}
+              ✅ <span class="verdict-success">Correct</span>
+            {% else %}
+              ❌ <span class="verdict-fail">Wrong</span>
+            {% endif %}
+          </h5>
+        </div>
+      </div>
+      {% endif %}
+
+{% if ai_suggestion %}
+<div class="card mb-4 shadow-sm border-warning">
+<div class="card-header bg-warning text-dark d-flex align-items-center">
+<i class="bi bi-robot me-2"></i>
+<strong>AI Code Review</strong>
+</div>
+<div class="card-body" style="background-color: #fffdf3;">
+<div class="p-3 rounded" style="background-color:rgba(0, 0, 0, 0.95); font-family: 'Courier New', monospace; font-size: 14px; color:rgb(209, 212, 216); border: 1px dashed #ffc107;">
+{{ ai_suggestion|markdownify }}
+</div>
+</div>
+</div>
+{% endif %}
+
+      {% if error %}
+      <div class="alert alert-danger mt-3">
+        <strong>Error:</strong>
+        <pre>{{ error }}</pre>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Include CodeMirror JS/CSS -->
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css"
+/>
+
+<script>
+  var editor = CodeMirror.fromTextArea(document.getElementById("id_code"), {
+    lineNumbers: true,
+    mode: "python",
+    theme: "default",
+    autoCloseBrackets: true,
+    matchBrackets: true,
+    indentUnit: 4,
+    indentWithTabs: true,
+  });
+</script>
+
+{% endblock %}
