@@ -77,7 +77,8 @@
 {{ form.code.value|default_if_none:'' }}</textarea>
             </div>
             <button type="submit" name="action" value="run" class="btn btn-success">Run Code</button>
-            <button type="submit" name="action" value="ai_review" class="btn btn-danger">AI Review</button>
+            <button type="submit" name="action" value="ai_review" class="btn btn-danger">
+              AI Review</button>
           </form>
         </div>
       </div>
@@ -101,16 +102,25 @@
 
 {% if ai_suggestion %}
 <div class="card mb-4 shadow-sm border-warning">
-<div class="card-header bg-warning text-dark d-flex align-items-center">
-<i class="bi bi-robot me-2"></i>
-<strong>AI Code Review</strong>
+  <div class="card-header bg-warning text-dark d-flex align-items-center">
+    <i class="bi bi-robot me-2"></i>
+    <strong>AI Code Review</strong>
+  </div>
+
+  <div class="card-body" style="background-color: #fffdf3;">
+    <div class="p-3 rounded markdown-body"
+         style="background-color:#1e1e1e; 
+                font-family: 'Fira Code', 'Courier New', monospace; 
+                font-size: 14px; 
+                color:#d4d4d4; 
+                border: 1px solid #ffc107; 
+                overflow-x: auto;">
+      {{ ai_suggestion|markdownify }}
+    </div>
+  </div>
 </div>
-<div class="card-body" style="background-color: #fffdf3;">
-<div class="p-3 rounded" style="background-color:rgba(0, 0, 0, 0.95); font-family: 'Courier New', monospace; font-size: 14px; color:rgb(209, 212, 216); border: 1px dashed #ffc107;">
-{{ ai_suggestion|markdownify }}
-</div>
-</div>
-</div>
+
+
 {% endif %}
 
       {% if error %}

@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+<title>{% block title %}Profile{% endblock %}</title>
+{% block content %}
+<div class="container my-5">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+      <h3 class="mb-0">User Profile</h3>
+    </div>
+    <div class="card-body">
+      <div class="row mb-4">
+        <div class="col-md-4">
+          <h5>Username:</h5>
+          <p class="fs-5">{{ user.username }}</p>
+        </div>
+        <div class="col-md-4">
+          <h5>Email:</h5>
+          <p class="fs-5">{{ user.email }}</p>
+        </div>
+        <div class="col-md-4">
+          <h5>Joined On:</h5>
+          <p class="fs-5">{{ user.date_joined|date:"F j, Y, g:i a" }}</p>
+        </div>
+      </div>
+
+      <hr>
+
+      <h4 class="mb-3">Your Submissions</h4>
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Problem</th>
+              <th>Language</th>
+              <th>Submitted At</th>
+              <th>Verdict</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in submissions_with_verdict %}
+            <tr>
+              <td>
+                {% if item.submission.problem %}
+                  <a href="{% url 'solve_problem' item.submission.problem.id %}" class="text-decoration-none">
+                    {{ item.submission.problem.title }}
+                  </a>
+                {% else %}
+                  N/A
+                {% endif %}
+              </td>
+              <td>{{ item.submission.language|title }}</td>
+              <td>{{ item.submission.timestamp|date:"M d, Y H:i" }}</td>
+              <td>
+                {% if item.verdict == True %}
+                  <span class="badge bg-success">
+                    <i class="bi bi-check-circle-fill"></i> Correct
+                  </span>
+                {% elif item.verdict == False %}
+                  <span class="badge bg-danger">
+                    <i class="bi bi-x-circle-fill"></i> Wrong
+                  </span>
+                {% else %}
+                  <span class="badge bg-secondary">Not Judged</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="4" class="text-center text-muted">No submissions found.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -17,6 +17,7 @@ from django.utils.safestring import mark_safe
 import tempfile
 from google import genai
 client = genai.Client(api_key= os.getenv('API_KEY'))
+
 CPP_TEMPLATE = """#include <iostream>
 using namespace std;
 
@@ -76,7 +77,7 @@ def oj_delete(request,oj_id):
         return redirect('oj_list')        
     return render(request,'oj_confirm_delete.html',{'oj':oj})   
 
-@login_required
+
 def submit(request):
     submission = None
     output = None
@@ -84,12 +85,14 @@ def submit(request):
     if request.method == "POST":
         form = CodeSubmissionForm(request.POST)
         if form.is_valid():
-            submission = form.save()
+            submission = form.save(commit=False)
+            submission.user = request.user  # ✅ Set user
             output = run_code(
                 submission.language, submission.code, submission.input_data
             )
             submission.output_data = output
             submission.save()
+        selected_lang = form.cleaned_data.get("language", "py")
     else:
         selected_lang = request.GET.get("lang", "py")
         if selected_lang == "cpp":
@@ -108,7 +111,8 @@ def submit(request):
     return render(request, "index.html", {
         "form": form,
         "submission": submission,  # This enables result section to show
-        "output": output
+        "output": output,
+        "selected_lang": selected_lang,
     })
 
 
@@ -234,6 +238,14 @@ def solve_problem(request, id):
                 try:
                     output = run_code(language, code, input_data).strip()
                     verdict = (output == expected_output)
+                    CodeSubmission.objects.create(
+                        user=request.user,
+                        problem=problem,
+                        code=code,
+                        language=language,
+                        input_data=input_data,
+                        output_data=output,
+                    )
                 except Exception as e:
                     error = str(e)
                     verdict = False
@@ -242,8 +254,8 @@ def solve_problem(request, id):
                 prompt = (
                     f"Here is a coding problem:\n{problem.description}\n\n"
                     f"Here is the user's submitted code in {language}:\n{code}\n\n"
-                    "Please review the code and provide suggestions to improve, "
-                    "point out possible bugs, or offer tips for correctness and efficiency."
+                    f"Please review the code and provide suggestions to improve\n "
+                    f"point out possible bugs, or offer tips for correctness and efficiency\n."
                 )
                 
                 try:
@@ -285,7 +297,34 @@ def solve_problem(request, id):
     #     'error': error
     # })
 
+@login_required
+def profile_view(request):
+    user = request.user
+    submissions = CodeSubmission.objects.filter(problem__isnull=False).filter(problem__topic__isnull=False)  # your filter may vary
 
+    # Filter only user's submissions
+    submissions = CodeSubmission.objects.filter(problem__isnull=False, problem__topic__isnull=False, user=user).select_related('problem')
+
+    # Create a list of dicts with verdict calculated dynamically
+    submissions_with_verdict = []
+
+    for sub in submissions:
+        if sub.problem:
+            expected_output = sub.problem.expected_output.strip()
+            actual_output = (sub.output_data or "").strip()
+            verdict = (expected_output == actual_output)
+        else:
+            verdict = None
+
+        submissions_with_verdict.append({
+            'submission': sub,
+            'verdict': verdict,
+        })
+
+    return render(request, 'profile.html', {
+        'user': user,
+        'submissions_with_verdict': submissions_with_verdict,
+    })
 
 
 def register(request):

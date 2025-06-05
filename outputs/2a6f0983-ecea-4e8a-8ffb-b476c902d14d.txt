@@ -1,0 +1,4 @@
+  File "C:\Users\adars\OneDrive\Desktop\IITK Courses\DEV\L4 Project\OnlineJudge\codes\2a6f0983-ecea-4e8a-8ffb-b476c902d14d.py", line 7
+    pass
+        ^
+IndentationError: unindent does not match any outer indentation level

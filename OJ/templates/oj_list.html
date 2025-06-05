@@ -1,31 +1,42 @@
 {% extends "layout.html" %}
 
-{% block title %}
-Title
-{% endblock %}
+{% block title %}MoJ - Master of Judges{% endblock %}
 
-{% block content %} 
-<h1 class="text-center mt-4">Online Judge</h1>
-<a class="btn btn-primary mb-3" href="{% url 'oj_create'%}">Create a Problem</a>
-<a class="btn btn-primary mb-3" href="{% url 'submit'%}">Online Compiler</a>
-<a class="btn btn-primary mb-3" href="{% url 'problem_topics'%}">Problems</a>
-<div class="container row gap-3">
-    {% for oj in ojs %}
-    <div class="card" style="width: 18rem;">
-  <img src="{{oj.photo.url}}" class="card-img-top" alt="">
-  <div class="card-body">
-    <h5 class="card-title">{{oj.user.username}}</h5>
-    <p class="card-text">{{oj.text}}</p>
-    
-    <div class="d-flex gap-2 mt-3">
-      {% if oj.user == user %}
-    <a href="{% url 'oj_edit' oj.id %}" class="btn btn-primary">Edit Problem</a>
-    <a href="{% url 'oj_delete' oj.id %}" class="btn btn-danger">Delete Problem</a>
-    {% endif %}
-  </div>
-  
-  </div>
+{% block content %}
+<!-- Welcome Banner -->
+<div class="text-center mt-4 mb-4">
+    <h1 class="display-4">👋 Welcome to <strong>MoJ</strong></h1>
+    <p class="lead">Your ultimate arena to <span class="text-primary">Code</span>, <span class="text-success">Compile</span>, and <span class="text-danger">Conquer</span>.</p>
+    <hr class="my-4">
 </div>
+
+<!-- Problem Cards -->
+<div class="container row gap-3 justify-content-center">
+    {% for oj in ojs %}
+    <div class="card shadow-sm hover-shadow transition-all" style="width: 18rem;">
+        <img src="{{ oj.photo.url }}" class="card-img-top" alt="Problem Image">
+        <div class="card-body">
+            <h5 class="card-title">{{ oj.user.username }}</h5>
+            <p class="card-text">{{ oj.text }}</p>
+            {% if oj.user == user %}
+            <div class="d-flex gap-2 mt-3">
+                <a href="{% url 'oj_edit' oj.id %}" class="btn btn-primary">Edit</a>
+                <a href="{% url 'oj_delete' oj.id %}" class="btn btn-danger">Delete</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
     {% endfor %}
 </div>
+
+<!-- Optional CSS Enhancements -->
+<style>
+    .hover-shadow:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+    .transition-all {
+        transition: all 0.3s ease-in-out;
+    }
+</style>
 {% endblock %}

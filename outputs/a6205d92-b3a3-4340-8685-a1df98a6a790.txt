@@ -1,0 +1,1 @@
+Enter number of elements: Enter target: 0 1

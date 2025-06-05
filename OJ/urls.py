@@ -10,6 +10,8 @@ urlpatterns = [
     path("problem_topics/", views.problem_topics, name="problem_topics"),
     path("topic_problems/<int:id>/", views.topic_problems, name="topic_problems"),
     path('solve/<int:id>/', views.solve_problem, name='solve_problem'),
+    path('profile/', views.profile_view, name='profile'),
+
 
 
 ] 
