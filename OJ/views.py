@@ -1,7 +1,7 @@
 from django.shortcuts import render
 # Create your views here.
-from .models import OJ,topic,CodeSubmission, problemset
-from .forms import OJForm,UserRegistrationForm,CodeSubmitForm
+from .models import OJ,topic,CodeSubmission, problemset,TestCase
+from .forms import OJForm,UserRegistrationForm,CodeSubmitForm, TestCaseForm, ProblemSetForm
 from django.shortcuts import get_object_or_404,redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
@@ -16,6 +16,7 @@ import markdown
 from django.utils.safestring import mark_safe
 import tempfile
 from google import genai
+from django.forms import modelformset_factory
 client = genai.Client(api_key= os.getenv('API_KEY'))
 
 CPP_TEMPLATE = """#include <iostream>
@@ -27,6 +28,16 @@ int main() {
 }
 """
 
+C_TEMPLATE = """#include <stdio.h>
+
+int main() {
+    // Your code here
+
+    return 0;
+}
+"""
+
+
 PYTHON_TEMPLATE = """def main():
     # Your code here
     pass
@@ -34,6 +45,25 @@ PYTHON_TEMPLATE = """def main():
 if __name__ == "__main__":
     main()
 """
+
+
+## new added
+@login_required
+
+# new added
+
+def create_problem(request):
+    if request.method == 'POST':
+        form = ProblemSetForm(request.POST)
+        if form.is_valid():
+            problem = form.save(commit=False)
+            problem.creator = request.user  # set creator if logged in
+            problem.save()
+            # Redirect somewhere, e.g., to topic problem list
+            return redirect('topic_problems', id=problem.topic.id)
+    else:
+        form = ProblemSetForm()
+    return render(request, 'create_problem.html', {'problem_form': form})
 
 
 def oj_list(request):
@@ -86,7 +116,14 @@ def submit(request):
         form = CodeSubmissionForm(request.POST)
         if form.is_valid():
             submission = form.save(commit=False)
-            submission.user = request.user  # ✅ Set user
+            
+            if request.user.is_authenticated:
+                submission.user = request.user
+            else:
+                
+                submission.user = None  # or just skip setting it
+            # submission = form.save(commit=False)
+            # submission.user = request.user  # ✅ Set user
             output = run_code(
                 submission.language, submission.code, submission.input_data
             )
@@ -94,9 +131,11 @@ def submit(request):
             submission.save()
         selected_lang = form.cleaned_data.get("language", "py")
     else:
-        selected_lang = request.GET.get("lang", "py")
+        selected_lang = request.GET.get("lang", "py").lower()
         if selected_lang == "cpp":
             initial_code = CPP_TEMPLATE
+        elif selected_lang=="c":
+            initial_code=C_TEMPLATE
         else:
             initial_code = PYTHON_TEMPLATE
             
@@ -116,71 +155,170 @@ def submit(request):
     })
 
 
-def run_code(language, code, input_data):
+def run_code(language, code, input_data, timeout_seconds=2):
     project_path = Path(settings.BASE_DIR)
     directories = ["codes", "inputs", "outputs"]
 
     for directory in directories:
         dir_path = project_path / directory
-        if not dir_path.exists():
-            dir_path.mkdir(parents=True, exist_ok=True)
+        dir_path.mkdir(parents=True, exist_ok=True)
 
     codes_dir = project_path / "codes"
     inputs_dir = project_path / "inputs"
     outputs_dir = project_path / "outputs"
 
     unique = str(uuid.uuid4())
-
     code_file_name = f"{unique}.{language}"
     input_file_name = f"{unique}.txt"
-    output_file_name = f"{unique}.txt"
 
     code_file_path = codes_dir / code_file_name
     input_file_path = inputs_dir / input_file_name
-    output_file_path = outputs_dir / output_file_name
 
     with open(code_file_path, "w") as code_file:
         code_file.write(code)
-    normalized_input = input_data.replace('\r\n', '\n').strip() + '\n'
 
+    normalized_input = input_data.replace('\r\n', '\n').strip() + '\n'
     with open(input_file_path, "w") as input_file:
-        # input_file.write(input_data)
         input_file.write(normalized_input)
 
-    with open(output_file_path, "w") as output_file:
-        pass  # This will create an empty file
+    try:
+        if language in ["cpp", "c"]:
+            executable_path = codes_dir / unique
+            compiler = "g++" if language == "cpp" else "gcc"
 
-    if language == "cpp":
-        executable_path = codes_dir / unique
-        compile_result = subprocess.run(
-            ["g++", str(code_file_path), "-o", str(executable_path)]
-        )
-        if compile_result.returncode == 0:
-            with open(input_file_path, "r") as input_file:
-                with open(output_file_path, "w") as output_file:
-                    subprocess.run(
-                        [str(executable_path)],
-                        stdin=input_file,
-                        stdout=output_file,
-                        stderr=output_file, 
-                    )
-    elif language == "py":
-        # Code for executing Python script
-        with open(input_file_path, "r") as input_file:
+            # Compile
+            compile_result = subprocess.run(
+                [compiler, str(code_file_path), "-o", str(executable_path)],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            if compile_result.returncode != 0:
+                return f"[Compilation Error]\n{compile_result.stderr.decode()}"
+
+            # Run executable
+            run_result = subprocess.run(
+                [str(executable_path)],
+                stdin=open(input_file_path, "r"),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                timeout=timeout_seconds,
+            )
+            output = run_result.stdout.decode()
+            errors = run_result.stderr.decode()
+            return output + (f"\n[Runtime Error]\n{errors}" if errors else "")
+
+        elif language == "py":
+            # Run Python file
+            run_result = subprocess.run(
+                ["python", str(code_file_path)],
+                stdin=open(input_file_path, "r"),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                timeout=timeout_seconds,
+            )
+            output = run_result.stdout.decode()
+            errors = run_result.stderr.decode()
+            return output + (f"\n[Error]\n{errors}" if errors else "")
+
+        else:
+            return "[Error] Unsupported language!"
+
+    except subprocess.TimeoutExpired:
+        return f"[Timeout Error] Execution exceeded {timeout_seconds} seconds."
+
+    except Exception as e:
+        return f"[Server Error] {str(e)}"
+
+# def run_code(language, code, input_data):
+#     project_path = Path(settings.BASE_DIR)
+#     directories = ["codes", "inputs", "outputs"]
+
+#     for directory in directories:
+#         dir_path = project_path / directory
+#         if not dir_path.exists():
+#             dir_path.mkdir(parents=True, exist_ok=True)
+
+#     codes_dir = project_path / "codes"
+#     inputs_dir = project_path / "inputs"
+#     outputs_dir = project_path / "outputs"
+
+#     unique = str(uuid.uuid4())
+
+#     code_file_name = f"{unique}.{language}"
+#     input_file_name = f"{unique}.txt"
+#     output_file_name = f"{unique}.txt"
+
+#     code_file_path = codes_dir / code_file_name
+#     input_file_path = inputs_dir / input_file_name
+#     output_file_path = outputs_dir / output_file_name
+
+#     with open(code_file_path, "w") as code_file:
+#         code_file.write(code)
+#     normalized_input = input_data.replace('\r\n', '\n').strip() + '\n'
+
+#     with open(input_file_path, "w") as input_file:
+#         # input_file.write(input_data)
+#         input_file.write(normalized_input)
+
+#     with open(output_file_path, "w") as output_file:
+#         pass  # This will create an empty file
+
+#     if language == "cpp":
+#         executable_path = codes_dir / unique
+#         compile_result = subprocess.run(
+#             ["g++", str(code_file_path), "-o", str(executable_path)],
+#             stdout=subprocess.PIPE, ## new added
+#             stderr=subprocess.PIPE, ## new added
+#         )
+#         if compile_result.returncode != 0:
+#             return f"[Compilation Error]\n{compile_result.stderr.decode()}"
+#         run_result = subprocess.run(
+#             [str(executable_path)],
+#             stdin=open(input_file_path, "r"),
+#             stdout=subprocess.PIPE,
+#             stderr=subprocess.PIPE,
+#         )
+#         output = run_result.stdout.decode()
+#         errors = run_result.stderr.decode()
+#         return output + (f"\n[Runtime Error]\n{errors}" if errors else "")
+#         # if compile_result.returncode == 0:
+#         #     with open(input_file_path, "r") as input_file:
+#         #         with open(output_file_path, "w") as output_file:
+#         #             subprocess.run(
+#         #                 [str(executable_path)],
+#         #                 stdin=input_file,
+#         #                 stdout=output_file,
+#         #                 stderr=output_file, 
+#         #             )
+#     elif language == "py":
+#         # Code for executing Python script
         
-            with open(output_file_path, "w") as output_file:
-                subprocess.run(
-                    ["python", str(code_file_path)],
-                    stdin=input_file,
-                    stdout=output_file,
-                    stderr=output_file,
-                )
+#         run_result = subprocess.run(
+#             ["python", str(code_file_path)],
+#             stdin=open(input_file_path, "r"),
+#             stdout=subprocess.PIPE,
+#             stderr=subprocess.PIPE,
+#         )
+#         output = run_result.stdout.decode()
+#         errors = run_result.stderr.decode()
+#         return output + (f"\n[Error]\n{errors}" if errors else "")
+#         # with open(input_file_path, "r") as input_file:
+        
+#         #     with open(output_file_path, "w") as output_file:
+#         #         subprocess.run(
+#         #             ["python", str(code_file_path)],
+#         #             stdin=input_file,
+#         #             stdout=output_file,
+#         #             stderr=output_file,
+#         #         )
 
-    # Read the output from the output file
-    with open(output_file_path, "r") as output_file:
-        output_data = output_file.read()
+#     # Read the output from the output file
+#     # with open(output_file_path, "r") as output_file:
+#     #     output_data = output_file.read()
 
-    return output_data
+#     # return output_data
+#     else:
+#         return "[Error] Unsupported language!"
 
 
 

@@ -1,4 +1,4 @@
-{% load static %}
+ {% load static %}
 
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
@@ -31,6 +31,219 @@
       integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT"
       crossorigin="anonymous"
     />
+    
+  </head>
+
+  <body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <div class="container-fluid">
+    <!-- Brand -->
+    <a class="navbar-brand" href="#">Master Of Judges</a>
+
+    <!-- Sidebar toggle icon (right side) -->
+    <button
+      class="btn btn-outline-secondary d-lg-none ms-auto"
+      type="button"
+      data-bs-toggle="offcanvas"
+      data-bs-target="#sidebar"
+      aria-controls="sidebar"
+    >
+      ☰
+    </button>
+
+    <!-- Navbar items always visible on large screens -->
+    <div class="collapse navbar-collapse d-none d-lg-flex justify-content-between" id="navbarContent">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'profile' %}">Profile</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'create_problem' %}">Create a Problem</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'submit' %}">Online Compiler</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'problem_topics' %}">Problems</a>
+        </li>
+      </ul>
+
+      <div class="d-flex align-items-center">
+        <a href="{% url 'oj_list' %}" class="btn btn-primary mx-2">OJ Home</a>
+        {% if user.is_authenticated %}
+          <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button class="btn btn-danger" type="submit">Logout</button>
+          </form>
+        {% else %}
+          <a href="{% url 'register' %}" class="btn btn-primary mx-2">Register</a>
+          <a href="{% url 'login' %}" class="btn btn-success mx-2">Login</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+  <!-- Offcanvas Sidebar for Small Devices Only (Left side only) -->
+  <div
+    class="offcanvas offcanvas-end d-lg-none"
+    tabindex="-1"
+    id="sidebar"
+    aria-labelledby="sidebarLabel"
+  >
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="sidebarLabel">Menu</h5>
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="offcanvas"
+        aria-label="Close"
+      ></button>
+    </div>
+    <div class="offcanvas-body d-flex flex-column">
+      <a class="nav-link mb-2" href="{% url 'profile' %}">Profile</a>
+      <a class="nav-link mb-2" href="{% url 'create_problem' %}">Create a Problem</a>
+      <a class="nav-link mb-2" href="{% url 'submit' %}">Online Compiler</a>
+      <a class="nav-link mb-2" href="{% url 'problem_topics' %}">Problems</a>
+      <hr />
+      <a href="{% url 'oj_list' %}" class="btn btn-primary mb-3">OJ Home</a>
+
+      {% if user.is_authenticated %}
+      <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button class="btn btn-danger w-100" type="submit">Logout</button>
+      </form>
+      {% else %}
+      <a href="{% url 'register' %}" class="btn btn-primary mb-2 w-100">Register</a>
+      <a href="{% url 'login' %}" class="btn btn-success w-100">Login</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="container mt-4">{% block content %}{% endblock %}</div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+
+</html> 
+{% comment %} {% load static %}
+
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Master Of Judges - Home</title>
+
+    <!-- CodeMirror CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/monokai.min.css"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT"
+      crossorigin="anonymous"
+    />
+
+    <style>
+      /* Background gradient */
+      body {
+        background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+        min-height: 100vh;
+        color: #eee;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .hero {
+        padding: 6rem 1rem;
+        text-align: center;
+      }
+
+      .hero h1 {
+        font-weight: 900;
+        font-size: 3.5rem;
+        margin-bottom: 1rem;
+        color: #00b894;
+        text-shadow: 0 0 10px #00b894;
+      }
+
+      .hero p {
+        font-size: 1.3rem;
+        margin-bottom: 2.5rem;
+        color: #dfe6e9;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .btn-cta {
+        font-weight: 700;
+        padding: 0.85rem 2.5rem;
+        font-size: 1.25rem;
+        border-radius: 50px;
+        transition: background-color 0.3s ease;
+      }
+      .btn-cta:hover {
+        background-color: #00b894cc;
+      }
+
+      /* Features Section */
+      .features {
+        background: #0f3460;
+        padding: 3rem 1rem;
+        border-radius: 12px;
+        max-width: 900px;
+        margin: 3rem auto;
+        box-shadow: 0 0 30px #00b894aa;
+      }
+
+      .features h2 {
+        text-align: center;
+        margin-bottom: 2rem;
+        font-weight: 800;
+        color: #00cec9;
+      }
+
+      .feature-item {
+        text-align: center;
+        padding: 1.5rem;
+        border-radius: 10px;
+        transition: transform 0.3s ease;
+        cursor: default;
+      }
+
+      .feature-item:hover {
+        transform: scale(1.05);
+        background-color: #00b89422;
+      }
+
+      .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: #00b894;
+      }
+
+      /* Footer */
+      footer {
+        text-align: center;
+        padding: 2rem 1rem;
+        font-size: 0.9rem;
+        color: #999;
+      }
+    </style>
   </head>
 
   <body>
@@ -55,9 +268,7 @@
               <a class="nav-link" href="{% url 'profile' %}">Profile</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'oj_create' %}"
-                >Create a Problem</a
-              >
+              <a class="nav-link" href="{% url 'oj_create' %}">Create a Problem</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{% url 'submit' %}">Online Compiler</a>
@@ -65,27 +276,78 @@
             <li class="nav-item">
               <a class="nav-link" href="{% url 'problem_topics' %}">Problems</a>
             </li>
-            
-            <!-- You can add nav links here if needed -->
           </ul>
 
           <a href="{% url 'oj_list' %}" class="btn btn-primary mx-2">OJ Home</a>
 
           {% if user.is_authenticated %}
-          <form method="post" action="{% url 'logout' %}">
+          <form method="post" action="{% url 'logout' %}" class="d-inline">
             {% csrf_token %}
             <button class="btn btn-danger" type="submit">Logout</button>
           </form>
           {% else %}
-          <a href="{% url 'register' %}" class="btn btn-primary mx-2"
-            >Register</a
-          >
+          <a href="{% url 'register' %}" class="btn btn-primary mx-2">Register</a>
           <a href="{% url 'login' %}" class="btn btn-success mx-2">Login</a>
           {% endif %}
         </div>
       </div>
     </nav>
 
-    <div class="container mt-4">{% block content %}{% endblock %}</div>
+    <main>
+      <section class="hero">
+        <h1>Master Of Judges</h1>
+        <p>
+          The ultimate platform to challenge your coding skills, create and
+          solve problems, and compile code online—all in one place.
+        </p>
+        <a href="{% url 'register' %}" class="btn btn-success btn-cta me-3"
+          >Get Started</a
+        >
+        <a href="{% url 'oj_list' %}" class="btn btn-outline-light btn-cta"
+          >Browse Problems</a
+        >
+      </section>
+
+      <section class="features container">
+        <h2>Why Choose Master Of Judges?</h2>
+        <div class="row g-4 justify-content-center">
+          <div class="col-md-4 feature-item">
+            <div class="feature-icon">💡</div>
+            <h5>Create Custom Problems</h5>
+            <p>
+              Design and publish your own coding challenges for the community to
+              solve.
+            </p>
+          </div>
+          <div class="col-md-4 feature-item">
+            <div class="feature-icon">🚀</div>
+            <h5>Online Code Compilation</h5>
+            <p>
+              Write and compile your code in multiple languages directly on the
+              platform.
+            </p>
+          </div>
+          <div class="col-md-4 feature-item">
+            <div class="feature-icon">🤖</div>
+            <h5>AI Code Review</h5>
+            <p>
+              Participate in contests and climb the leaderboard to showcase your
+              skills.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      &copy; {{ now.year }} Master Of Judges. All rights reserved.
+    </footer>
+
+    <!-- Bootstrap JS Bundle -->
+    <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
+  crossorigin="anonymous"
+    ></script>
   </body>
-</html>
+</html> {% endcomment %}

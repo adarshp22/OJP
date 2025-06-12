@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+
 # Create your models here.
 
 
@@ -17,7 +18,7 @@ class OJ(models.Model):
 
 
 class CodeSubmission(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True) 
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)  ## CASCADE->SET_NULL
     language = models.CharField(max_length=100)
     code = models.TextField()
     problem = models.ForeignKey('problemset', on_delete=models.CASCADE, null=True, blank=True)
@@ -45,3 +46,12 @@ class problemset(models.Model):
     topic = models.ForeignKey(topic, on_delete=models.CASCADE, related_name='problems')
     input_data = models.TextField(default="")  # predefined input for testing
     expected_output = models.TextField(default="")  
+    creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)  # NEW added // new
+    
+class TestCase(models.Model):
+    problem = models.ForeignKey(problemset, on_delete=models.CASCADE, related_name='testcases')
+    input_data = models.TextField()
+    expected_output = models.TextField()
+
+    def __str__(self):
+        return f"TestCase for {self.problem.title}"

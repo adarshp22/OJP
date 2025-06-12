@@ -13,6 +13,7 @@
     <select name="language" id="languageSelector" onchange="changeLanguage(this.value)">
   <option value="py" {% if selected_lang == "py" %}selected{% endif %}>Python</option>
   <option value="cpp" {% if selected_lang == "cpp" %}selected{% endif %}>C++</option>
+  <option value="c" {% if selected_lang == "c" %}selected{% endif %}>C</option>
 </select>
 
   </div>
@@ -61,8 +62,11 @@
 <script>
   const modeMap = {
     "py": "python",
-    "cpp": "text/x-c++src"
+    "cpp": "text/x-c++src",
+    "c": "text/x-csrc"
   };
+
+  const selectedLang = "{{ selected_lang }}";
 
   var editor = CodeMirror.fromTextArea(document.getElementById("codeEditor"), {
     lineNumbers: true,

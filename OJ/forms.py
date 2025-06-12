@@ -1,5 +1,5 @@
 from django import forms
-from .models import OJ,CodeSubmission
+from .models import OJ,CodeSubmission, TestCase, problemset
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 class OJForm(forms.ModelForm):
@@ -38,3 +38,17 @@ class CodeSubmitForm(forms.Form):
         widget=forms.Textarea()
     )
     language = forms.ChoiceField(choices=LANGUAGE_CHOICES, initial='py', label='Language')
+    
+    
+    
+## new added
+
+class ProblemSetForm(forms.ModelForm):
+    class Meta:
+        model = problemset
+        fields = ['title', 'description', 'topic', 'input_data', 'expected_output']
+        
+class TestCaseForm(forms.ModelForm):
+    class Meta:
+        model = TestCase
+        fields = ['input_data', 'expected_output']
