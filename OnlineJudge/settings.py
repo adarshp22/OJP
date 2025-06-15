@@ -30,9 +30,9 @@ API_KEY = os.getenv('API_KEY')
 SECRET_KEY = 'django-insecure-#ggej5dk3=$8+$4+^8x8_1bq#pv&@3y=(aqzb48inr&26f*1%c'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition

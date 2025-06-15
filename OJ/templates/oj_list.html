@@ -4,39 +4,87 @@
 
 {% block content %}
 <!-- Welcome Banner -->
-<div class="text-center mt-4 mb-4">
-    <h1 class="display-4">👋 Welcome to <strong>MoJ</strong></h1>
-    <p class="lead">Your ultimate arena to <span class="text-primary">Code</span>, <span class="text-success">Compile</span>, and <span class="text-danger">Conquer</span>.</p>
-    <hr class="my-4">
+<div class="text-center mt-5 mb-4">
+  <h1 class="display-4 fw-bold">👋 Welcome to <span class="text-warning">MoJ</span></h1>
+  <p class="lead">Your ultimate arena to <span class="text-primary fw-semibold">Code</span>, 
+    <span class="text-success fw-semibold">Compile</span>, and 
+    <span class="text-danger fw-semibold">Conquer</span>.</p>
+  <hr class="my-4">
 </div>
 
-<!-- Problem Cards -->
-<div class="container row gap-3 justify-content-center">
-    {% for oj in ojs %}
-    <div class="card shadow-sm hover-shadow transition-all" style="width: 18rem;">
-        <img src="{{ oj.photo.url }}" class="card-img-top" alt="Problem Image">
-        <div class="card-body">
-            <h5 class="card-title">{{ oj.user.username }}</h5>
-            <p class="card-text">{{ oj.text }}</p>
-            {% if oj.user == user %}
-            <div class="d-flex gap-2 mt-3">
-                <a href="{% url 'oj_edit' oj.id %}" class="btn btn-primary">Edit</a>
-                <a href="{% url 'oj_delete' oj.id %}" class="btn btn-danger">Delete</a>
-            </div>
-            {% endif %}
-        </div>
+<!-- Feature Highlights -->
+<div class="container my-5">
+  <div class="row text-center g-4">
+    <div class="col-md-4">
+      <div class="p-4 border rounded shadow-sm h-100 transition-all hover-lift">
+        <i class="bi bi-robot fs-1 text-info"></i>
+        <h5 class="mt-3">AI Code Review</h5>
+        <p class="text-muted">Instant feedback and suggestions to improve your code quality and logic.</p>
+      </div>
     </div>
-    {% endfor %}
+    <div class="col-md-4">
+      <div class="p-4 border rounded shadow-sm h-100 transition-all hover-lift">
+        <i class="bi bi-people-fill fs-1 text-warning"></i>
+        <h5 class="mt-3">10,000+ Coders</h5>
+        <p class="text-muted">Join a growing community of passionate developers and learners.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="p-4 border rounded shadow-sm h-100 transition-all hover-lift">
+        <i class="bi bi-diagram-3 fs-1 text-success"></i>
+        <h5 class="mt-3">Practice DSA</h5>
+        <p class="text-muted">Sharpen your skills with curated problems in arrays, trees, graphs, and more.</p>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- Optional CSS Enhancements -->
+<!-- Footer -->
+<footer class="bg-dark text-light mt-5 py-4 shadow-sm">
+  <div class="container text-center">
+    <div class="row mb-2">
+      <div class="col-md-4 mb-2">
+        <h5>🌐 MoJ Platform</h5>
+        <p style="font-size: 0.9rem;">Code, compile, and conquer the world of competitive programming.</p>
+      </div>
+      <div class="col-md-4 mb-2">
+        <h5>🔧 Features</h5>
+        <ul class="list-unstyled" style="font-size: 0.9rem;">
+          <li>AI Code Review</li>
+          <li>10000+ Users</li>
+          <li>DSA Practice Problems</li>
+        </ul>
+      </div>
+      <div class="col-md-4 mb-2">
+        <h5>📬 Contact</h5>
+        <p style="font-size: 0.9rem;">Email: support@moj.com<br>Phone: +91-98765-43210</p>
+      </div>
+    </div>
+    <hr class="border-light" />
+    <p class="mb-0" style="font-size: 0.85rem;">&copy; 2025 MoJ - Master of Judges. All rights reserved.</p>
+  </div>
+</footer>
+
+
+
+<!-- Custom CSS -->
 <style>
-    .hover-shadow:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-    }
-    .transition-all {
-        transition: all 0.3s ease-in-out;
-    }
+  .transition-all {
+    transition: all 0.3s ease-in-out;
+  }
+  .custom-card:hover,
+  .hover-lift:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  }
+  .object-fit-cover {
+    object-fit: cover;
+  }
+  footer a:hover {
+    text-decoration: underline;
+  }
 </style>
+
+<!-- Bootstrap Icons (if not loaded in layout.html) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 {% endblock %}
