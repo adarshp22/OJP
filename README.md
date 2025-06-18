@@ -30,16 +30,19 @@ A modern, full-featured online judge built with **Django** and **Docker**, desig
 
 ---
 
+
 ## 📌 Features
 
-✅ Solve coding problems in C++, Python, and C
-🧪 Automatic code evaluation with hidden test cases
-🧠 AI Code Review system (via Google Gemini API)
-🧑‍🏫 Admin dashboard for adding/editing/deleting problems
-🗃 User submission history with verdicts and timestamps
-🔐 Django Auth with session-based login/logout
-🐳 Dockerized compiler microservice for secure execution
-📁 Test case management handled via Django Admin using database-backed models for easy input/output storage and evaluation
+- ✅ Solve coding problems in C++, Python, and C  
+- 🧪 Automatic code evaluation with hidden test cases  
+- 🧠 AI Code Review system (via Google Gemini API)  
+- 🧑‍🏫 Admin dashboard for adding/editing/deleting problems  
+- 🗃 User submission history with verdicts and timestamps  
+- 🔐 Django Auth with session-based login/logout  
+- 🐳 Dockerized compiler microservice for secure execution  
+- 📁 Test case management handled via Django Admin using database-backed models for easy input/output storage and evaluation.
+
+
 
 ---
 
