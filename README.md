@@ -51,7 +51,7 @@ A modern, full-featured online judge built with **Django** and **Docker**, desig
 ### **Frontend:**
 
 * Django Templates
-* Bootstrap 5
+* HTML and Javascript
 * Custom CSS
 
 ### **Backend:**
