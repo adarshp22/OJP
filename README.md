@@ -9,7 +9,7 @@ A modern, full-featured online judge built with **Django** and **Docker**, desig
 
 ## 🌟 Live Demo
 
-**🔗 Project URL**: [http://43.204.147.14:8000/OJ](http://43.204.147.14:8000/OJ)
+**🔗 Project URL**: [http://43.204.147.14:8000/OJ](http://13.200.183.12:8000/OJ/)
 
 ---
 
