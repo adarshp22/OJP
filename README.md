@@ -9,7 +9,7 @@ A modern, full-featured online judge built with **Django** and **Docker**, desig
 
 ## 🌟 Live Demo
 
-**🔗 Project URL**: [https://backend.onlinejude.online/OJ/](https://backend.onlinejude.online/OJ/)
+**🔗 Project URL**: [https://backend.onlinejude.online/OJ/](https://backend.onlinejude.online/OJ/) || [https://13.200.183.12/OJ/](https://13.200.183.12/OJ/) 
 
 ---
 
